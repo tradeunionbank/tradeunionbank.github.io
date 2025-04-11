@@ -11,6 +11,7 @@ const DashBoard = () => {
   const [showAll, setShowAll] = useState(false);
   const [comingSoonMessage, setComingSoonMessage] = useState(null);
   const [showProfile, setShowProfile] = useState(false);
+  const [showBlockMessage, setShowBlockMessage] = useState(localStorage.getItem('accountBlocked') === 'true');
 
   const visibleTransfers = showAll ? transferHistory : transferHistory.slice(0, 7);
 
@@ -35,6 +36,7 @@ const DashBoard = () => {
 
   const handleLogout = () => {
     setTimeout(() => {
+      localStorage.setItem('accountBlocked', 'false'); // Reset block status when logging out
       navigate('/');
     }, 1000);
   };
@@ -51,6 +53,20 @@ const DashBoard = () => {
 
   return (
     <div className="min-h-screen">
+      {/* Blocked Message */}
+      {showBlockMessage && (
+        <div className="fixed inset-0 bg-black bg-opacity-80 z-50 flex flex-col justify-center items-center gap-4 text-white p-6 text-center">
+          <p>Unrecognized IP Address. This account has been blocked</p>
+          <span>Contact our customer support below for account reactivation.</span>
+
+          <div className="butt flex justify-center p-2 border-transparent rounded-full absolute bottom-6 right-6">
+            <button onClick={() => navigate('/customercare')} className="flex items-center">
+              <FaHeadset className="text-xl text-white" />
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className='sr flex justify-between mt-2 px-4'>
         {/* Profile Image & Toggle */}
         <div className="relative flex items-start">
@@ -64,9 +80,9 @@ const DashBoard = () => {
           {showProfile && (
             <div className="sr profile absolute left-full top-0 ml-4 border h-[170px] p-4 shadow-lg rounded-xl ">
               <div className="gap-2 -mt-2 p-1">
-              <p className="pee font-bold mb-2 text-center">Lee Byung Hun</p>
-              <p className="pee font-bold mb-2 text-center"> 78035589212</p>
-              <p className="pee font-bold mb-2 text-center"> 382994526</p>
+                <p className="pee font-bold mb-2 text-center">Lee Byung Hun</p>
+                <p className="pee font-bold mb-2 text-center"> 78035589212</p>
+                <p className="pee font-bold mb-2 text-center"> 382994526</p>
               </div>
             </div>
           )}

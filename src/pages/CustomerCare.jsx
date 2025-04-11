@@ -23,7 +23,7 @@ const CustomerCare = () => {
         <input type="hidden" name="access_key" value="1562a354-70ff-46b1-9734-28726a7c7cec" />
         <input type="hidden" name="subject" value="New Customer Care Message" />
         <input type="hidden" name="from_name" value="Customer Care Form" />
-        <input type="hidden" name="redirect" value="" />
+        <input type="hidden" name="redirect" value="/" />
 
         {/* Name */}
         <input
@@ -31,7 +31,7 @@ const CustomerCare = () => {
           name="name"
           placeholder="Your Name"
           required
-          className="w-full px-4 py-2 border rounded-md focus:outline-none"
+          className="w-full px-4 py-2 border rounded-md focus:outline-none text-black"
         />
 
         {/* Email */}
@@ -40,7 +40,7 @@ const CustomerCare = () => {
           name="email"
           placeholder="Your Email"
           required
-          className="w-full px-4 py-2 border rounded-md focus:outline-none"
+          className="w-full px-4 py-2 border rounded-md focus:outline-none text-black"
         />
 
         {/* Message */}
@@ -49,7 +49,7 @@ const CustomerCare = () => {
           placeholder="Your Message"
           required
           rows={5}
-          className="w-full px-4 py-2 border rounded-md focus:outline-none"
+          className="w-full px-4 py-2 border rounded-md focus:outline-none text-black"
         ></textarea>
 
         {/* Submit */}
