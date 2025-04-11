@@ -1,0 +1,211 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-color:rgb(6, 15, 63);
+  --txt-color:rgb(224, 196, 35);
+}
+
+
+body {
+  margin: 0;
+  font-family: "Roboto", sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  background: linear-gradient(to bottom, rgb(6, 15, 63), rgb(48, 61, 119)); /* darker to lighter */
+  color: white; /* Optional for better contrast */
+}
+
+
+.container {
+  width: 500px;
+  padding: 2rem;
+  gap: 1.5rem; /* evenly spaced inputs, button, etc. */
+  background-color: rgba(255, 255, 255, 0); /* optional: to make form stand out */
+  border-radius: 1rem;
+}
+
+.container1 {
+  width: 500px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; /* evenly spaced inputs, button, etc. */
+  background-color: rgba(255, 255, 255, 0); /* optional: to make form stand out */
+  border-radius: 1rem;
+}
+
+.a {
+  background-color: var(--bg-color);
+  color: var(--txt-color);
+}
+.ab {
+  color: var(--txt-color);
+}
+
+.quick {
+  background-color: var(--bg-color);
+  color: var(--txt-color);
+}
+
+.blue {
+  background: var(--txt-color);
+  color: var(--bg-color);
+}
+
+.blue:hover {
+  background-color: rgb(133, 114, 7);
+}
+
+.bg-white {
+  background-color: rgb(6, 18, 87);
+}
+.need {
+  background: var(--txt-color);
+  color: var(--bg-color);
+}
+
+
+.butt:hover {
+  background-color: rgb(143, 124, 18);
+}
+
+.greeting {
+  color: var(--txt-color);
+}
+
+.tf {
+  background-color: rgb(6, 18, 87);
+}
+
+.li {
+  color: var(--txt-color);
+}
+
+.balance {
+  background-color: var(--bg-color);
+}
+
+.head {
+  color: var(--txt-color);
+}
+
+.bal {
+  color: var(--txt-color);
+}
+
+.form {
+  background-color: var(--bg-color);
+  color: var(--txt-color);
+}
+
+.inp {
+  background-color: rgb(255, 255, 255);
+  color: var(--bg-color);
+}
+
+.top {
+  background: var(--txt-color);
+  color: var(--bg-color);
+  margin-top: 30%;
+}
+
+.tlb {
+  color: var(--txt-color);
+}
+
+.profile {
+  border: 1px transparent;
+  background-color: transparent;
+}
+
+.pee {
+  border: 1px transparent;
+  border-radius: 3rem;
+  background: var(--txt-color);
+  color: var(--bg-color);
+}
+
+.query {
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  margin-top: 20%;
+}
+
+.log {
+  border: 1px transparent;
+  background-color: rgb(6, 15, 63);
+  color: rgb(224, 196, 35);
+  border-radius: 10rem;
+  width: 40%;
+}
+
+.log:hover {
+  color: rgb(138, 118, 9);
+}
+
+@media screen and (max-width: 368px) {
+  .container {
+    width: 400px
+  }
+
+  .form {
+    width: 400px;
+  }
+}
+
+@media screen and (max-width: 640px) {
+  .container {
+    width: 400px
+  }
+
+  .form {
+    width: 400px;
+    padding: 4px;
+    gap: 2px;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+
+  .inp {
+    padding: 5px;
+    width: 70%;
+    font-size: small;
+    gap: 2px;
+    margin: 15px;
+  }
+
+  .tlb {
+    margin-left: 18px;
+  }
+
+  .bg-w {
+    width: 95%;
+  }
+
+}
+
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+  .container {
+    width: 700px;
+  }
+}
+
+@media screen and (min-width: 1025px) and (max-width: 1592px) {
+  .container {
+    width: 1000px;
+  }
+}
