@@ -21,31 +21,20 @@ const LoginPage = () => {
   };
 
   useEffect(() => {
-    ScrollReveal().reveal('.sr', {
+    ScrollReveal().reveal(".sr", {
       delay: 100,
-      distance: '30px',
+      distance: "30px",
       duration: 1000,
-      easing: 'ease-out',
-      origin: 'bottom',
+      easing: "ease-out",
+      origin: "bottom",
       interval: 300,
       reset: false,
     });
   }, []);
 
   return (
-    <div
-      className=" w-full flex items-center justify-center relative"
-      style={{
-        backgroundImage: 'url("/logo3.png")',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-      }}
-    >
-      {/* Optional overlay to improve text visibility */}
-      <div className="absolute inset-0 bg-black/50 z-0" />
-
-      <div className="relative z-10 w-full max-w-md bg-white/20 backdrop-blur-lg p-8 rounded-2xl shadow-lg">
+    <div className="container flex items-center justify-center">
+      <div className="w-full bg-white/20 backdrop-blur-lg p-8 rounded-2xl shadow-lg sr">
         <p className="text-center text-white mb-6 font-bold text-2xl">Login to your Account</p>
 
         <div className="flex flex-col gap-4">
