@@ -20,7 +20,7 @@ const CustomerCare = () => {
         onSubmit={() => setSubmitted(true)}
       >
         {/* Required Hidden Fields */}
-        <input type="hidden" name="access_key" value="YOUR_ACCESS_KEY_HERE" />
+        <input type="hidden" name="access_key" value="1562a354-70ff-46b1-9734-28726a7c7cec" />
         <input type="hidden" name="subject" value="New Customer Care Message" />
         <input type="hidden" name="from_name" value="Customer Care Form" />
         <input type="hidden" name="redirect" value="" />

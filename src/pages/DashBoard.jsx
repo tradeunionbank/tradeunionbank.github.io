@@ -65,10 +65,8 @@ const DashBoard = () => {
             <div className="sr profile absolute left-full top-0 ml-4 border h-[170px] p-4 shadow-lg rounded-xl ">
               <div className="gap-2 -mt-2 p-1">
               <p className="pee font-bold mb-2 text-center">Lee Byung Hun</p>
-              <p className="pee font-bold mb-2 text-center"> 1234567890</p>
-              <p className="pee font-bold mb-2 text-center"> 987654321</p>
-              <p className="pee font-bold mb-2 text-center">+82 10-1234-5678</p>
-              <p className="pee font-bold p-1 mb-2 text-center">lee@example.com</p>
+              <p className="pee font-bold mb-2 text-center"> 78035589212</p>
+              <p className="pee font-bold mb-2 text-center"> 382994526</p>
               </div>
             </div>
           )}
