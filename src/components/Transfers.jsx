@@ -62,7 +62,7 @@ const Transfers = () => {
           Back
         </Button>
         <p className="sr tlb absolute left-1/2 transform ml-2 -translate-x-1/2 font-semibold">
-          Transfer to Local Banks
+          Transfer to Local / International Banks
         </p>
       </header>
 

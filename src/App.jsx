@@ -9,6 +9,7 @@ import CustomerCare from './pages/CustomerCare';
 import TransferHistoryPage from './pages/TransferHistoryPage';
 import QueryPage from './pages/QueryPage';
 import LoginPage from './pages/LoginPage'; 
+import ForgotPassword from './pages/ForgotPasswordPage';
 
 const PrivateRoute = ({ element }) => {
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
@@ -32,6 +33,7 @@ function App() {
         <Route path="/transferhistorypage" element={<PrivateRoute element={<TransferHistoryPage />} />} />
         <Route path="/querypage" element={<PrivateRoute element={<QueryPage />} />} />
         <Route path="/loanterms" element={<PrivateRoute element={<LoanTerms />} />} />
+        <Route path="/forgot-password" element={<PrivateRoute element={<ForgotPassword />} />} />
       </Routes>
     </Router>
   );

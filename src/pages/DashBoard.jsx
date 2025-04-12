@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import { FaHeadset } from "react-icons/fa";
+import { FaHeadset, FaUser } from "react-icons/fa";
 import { MdLogout } from "react-icons/md";
 import { Button } from "../components/Button";
 import { transferHistory } from "../transferHistory";
@@ -58,7 +58,6 @@ const DashBoard = () => {
         <div className="fixed inset-0 bg-black bg-opacity-80 z-50 flex flex-col justify-center items-center gap-4 text-white p-6 text-center">
           <p>Unrecognized IP Address. This account has been blocked</p>
           <span>Contact our customer support below for account reactivation.</span>
-
           <div className="butt flex justify-center p-2 border-transparent rounded-full absolute bottom-6 right-6">
             <button onClick={() => navigate('/customercare')} className="flex items-center">
               <FaHeadset className="text-xl text-white" />
@@ -67,33 +66,40 @@ const DashBoard = () => {
         </div>
       )}
 
+      {/* Top bar */}
       <div className='sr flex justify-between mt-2 px-4'>
-        {/* Profile Image & Toggle */}
         <div className="relative flex items-start">
-          <button
-            className="mt-2 img-dv"
-            onClick={toggleProfile}
-          >
-            <img src="public/leebyunghun.jpg" alt="lee" className='w-10 h-10 rounded-full' />
+          <button className="mt-2 img-dv" onClick={toggleProfile}>
+            <FaUser />
           </button>
-
-          {showProfile && (
-            <div className="sr profile absolute left-full top-0 ml-4 border h-[170px] p-4 shadow-lg rounded-xl ">
-              <div className="gap-2 -mt-2 p-1">
-                <p className="pee font-bold mb-2 text-center">Lee Byung Hun</p>
-                <p className="pee font-bold mb-2 text-center"> 78035589212</p>
-                <p className="pee font-bold mb-2 text-center"> 382994526</p>
-              </div>
-            </div>
-          )}
         </div>
 
-        {/* Customer Care */}
         <div className="sr border-transparent grid grid-col-2 mt-1 rounded-3xl m-2 p-2 gap-1">
           <div className='flex justify-center p-2 border-transparent rounded-full'>
             <button onClick={() => navigate('/customercare')} className="flex items-center">
               <FaHeadset />
             </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Profile Block with Animation */}
+      <div className="overflow-hidden transition-all duration-500 ease-in-out px-4">
+        <div
+          className={`
+            transform transition-all duration-500 ease-in-out
+            ${showProfile ? 'opacity-100 translate-y-0 max-h-[500px] scale-100' : 'opacity-0 -translate-y-4 max-h-0 scale-95 pointer-events-none'}
+          `}
+        >
+          <div className="sr profile w-full border p-4 shadow-lg rounded-xl bg-white mb-4">
+            <div className="gap-2 p-1">
+              <p className="pee font-bold mb-2 text-center">Lee Byung Hun</p>
+              <p className="pee font-bold mb-2 text-center">78035589212</p>
+              <p className="pee font-bold mb-2 text-center">382994526</p>
+              <p className="pee font-bold mb-2 text-center">+1 (249) 517-1819</p>
+              <p className="pee font-bold mb-2 text-center">9336 Civic Center Drive</p>
+              <p className="pee font-bold mb-2 text-center">Beverly Hills, CA</p>
+            </div>
           </div>
         </div>
       </div>
@@ -106,7 +112,7 @@ const DashBoard = () => {
       )}
 
       {/* Balance */}
-      <div className={`sr bg-white p-4 container rounded-2xl mb-8 mx-4 transition-all duration-300 ${showProfile ? 'mt-28' : ''}`}>
+      <div className={`sr bg-white p-4 container rounded-2xl mb-8 mx-4 transition-all duration-300`}>
         <div className="balance p-4 rounded-lg flex items-center justify-center gap-2">
           <h2 className="bal font-bold text-3xl">$200,052,938.34</h2>
         </div>
@@ -131,7 +137,6 @@ const DashBoard = () => {
           </Button>
         </div>
 
-        {/* Coming Soon Message */}
         {comingSoonMessage && (
           <div className="absolute top-8 left-1/2 transform gap-4 -translate-x-1/2 -translate-y-1/2 bg-red-500 text-white p-4 rounded-xl text-center w-[300px] shadow-lg">
             {comingSoonMessage}

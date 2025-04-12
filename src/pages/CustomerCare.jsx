@@ -3,6 +3,27 @@ import React, { useState } from 'react';
 const CustomerCare = () => {
   const [submitted, setSubmitted] = useState(false);
 
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Prevent page refresh
+    const formData = new FormData(e.target);
+
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+        setSubmitted(true);
+        e.target.reset(); // Clear form
+      } else {
+        alert("Something went wrong. Please try again.");
+      }
+    } catch (error) {
+      alert("Submission failed. Check your internet connection.");
+    }
+  };
+
   return (
     <div className="w-full sm:max-w-md md:max-w-lg mx-auto p-4 mt-10 border rounded-lg shadow-lg">
       <h2 className="text-xl font-semibold mb-4 text-center">Contact Us</h2>
@@ -13,17 +34,11 @@ const CustomerCare = () => {
         </div>
       )}
 
-      <form
-        action="https://api.web3forms.com/submit"
-        method="POST"
-        className="space-y-4"
-        onSubmit={() => setSubmitted(true)}
-      >
+      <form onSubmit={handleSubmit} className="space-y-4">
         {/* Required Hidden Fields */}
         <input type="hidden" name="access_key" value="1562a354-70ff-46b1-9734-28726a7c7cec" />
         <input type="hidden" name="subject" value="New Customer Care Message" />
         <input type="hidden" name="from_name" value="Customer Care Form" />
-        <input type="hidden" name="redirect" value="/" />
 
         {/* Name */}
         <input
