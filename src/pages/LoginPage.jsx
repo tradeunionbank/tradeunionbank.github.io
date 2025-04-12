@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ScrollReveal from "scrollreveal";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
 const LoginPage = () => {
   const [username, setUsername] = useState(localStorage.getItem("rememberedUsername") || "");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = () => {
     const correctUsername = "leeByunghuN970";
-    const correctPassword = "birdiemyangel";
+    const correctPassword = "33waveaway%$_";
 
     if (username === correctUsername && password === correctPassword) {
       localStorage.setItem("isLoggedIn", "true");
@@ -51,13 +53,28 @@ const LoginPage = () => {
             onChange={(e) => setUsername(e.target.value)}
             className="border px-6 h-14 text-black py-2 rounded-full w-full"
           />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="border text-black px-6 py-2 h-14 rounded-full w-full"
-          />
+
+          {/* Password with Eye Toggle */}
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="border text-black px-6 py-2 h-14 rounded-full w-full pr-12"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute top-1/2 right-4 transform -translate-y-1/2 text-gray-600"
+            >
+              {showPassword ? (
+                <EyeSlashIcon className="w-5 h-5" />
+              ) : (
+                <EyeIcon className="w-5 h-5" />
+              )}
+            </button>
+          </div>
         </div>
 
         <div className="flex justify-between items-center mt-4 text-white text-sm">
