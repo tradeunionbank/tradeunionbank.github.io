@@ -10,7 +10,6 @@ import TransferHistoryPage from './pages/TransferHistoryPage';
 import QueryPage from './pages/QueryPage';
 import LoginPage from './pages/LoginPage'; 
 import ForgotPassword from './pages/ForgotPasswordPage';
-import CountDownBanner from './components/CountDownBanner'
 
 const PrivateRoute = ({ element }) => {
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
@@ -20,7 +19,6 @@ const PrivateRoute = ({ element }) => {
 function App() {
   return (
     <Router>
-      <CountDownBanner />
       <Routes>
         {/* Login Route */}
         <Route path="/" element={<LoginPage />} />
