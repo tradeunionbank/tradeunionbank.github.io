@@ -12,7 +12,7 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   const handleLogin = () => {
-    const correctUsername = "leeByunghuN970";
+    const correctUsername = "leeJungJae147";
     const correctPassword = "33waveaway%$_";
 
     if (username === correctUsername && password === correctPassword) {

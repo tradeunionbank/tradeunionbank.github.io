@@ -93,7 +93,7 @@ const DashBoard = () => {
         >
           <div className="sr profile w-full border p-4 shadow-lg rounded-xl bg-white mb-4">
             <div className="gap-2 p-1">
-              <p className="pee font-bold mb-2 text-center">Lee Byung Hun</p>
+              <p className="pee font-bold mb-2 text-center">Lee Jung Jae</p>
               <p className="pee font-bold mb-2 text-center">78035589212</p>
               <p className="pee font-bold mb-2 text-center">382994526</p>
               <p className="pee font-bold mb-2 text-center">+1 (249) 517-1819</p>
