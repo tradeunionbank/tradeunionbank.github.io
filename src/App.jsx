@@ -1,5 +1,6 @@
+// app.jsx
 import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { HashRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Transfer from "./pages/Transfer";
 import Request from "./pages/Request";
 import Loans from "./pages/Loans";
@@ -25,8 +26,22 @@ function AppContent() {
   const location = useLocation();
   const { setIsLoading } = useLoadingSpinner();
   const { isAuthenticated, isPasskeyVerified } = useAuth();
-  const [balance, setBalance] = useState(100000); // Restore balance state
-  const [transactions, setTransactions] = useState([]); // Restore transactions state
+  const [balance, setBalance] = useState(() => {
+    const saved = localStorage.getItem('balance');
+    return saved ? parseFloat(saved) : 100000;
+  });
+  const [transactions, setTransactions] = useState(() => {
+    const saved = localStorage.getItem('transactions');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('balance', balance);
+  }, [balance]);
+
+  useEffect(() => {
+    localStorage.setItem('transactions', JSON.stringify(transactions));
+  }, [transactions]);
 
   useEffect(() => {
     setIsLoading(true);

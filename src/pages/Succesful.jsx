@@ -1,10 +1,10 @@
+// src/pages/Successful.jsx
 import { useLocation, useNavigate } from "react-router-dom";
-import { FaArrowAltCircleLeft, FaHome } from "react-icons/fa"; // Added FaHome for the home icon
+import { FaArrowAltCircleLeft, FaHome } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { CheckCircle } from "lucide-react";
-import { useEffect } from "react";
 
-function Successful({ setTransactions }) {
+function Successful() {
   const { state } = useLocation();
   const navigate = useNavigate();
 
@@ -32,31 +32,6 @@ function Successful({ setTransactions }) {
     ibanDetails,
     newBalance,
   } = state;
-
-  // ⏺ Save transaction once user lands here
-  useEffect(() => {
-    const newTx = {
-      id: Date.now(),
-      name: ibanDetails
-        ? `${ibanDetails.firstName} ${ibanDetails.lastName}`
-        : transferType === "SEPA"
-        ? "SEPA Transfer"
-        : "SWIFT Transfer",
-      time: new Date().toLocaleString(),
-      amount: `-${amount} ${currency}`,
-      color: "red",
-    };
-
-    // Create a unique key based on transaction details
-    const uniqueKey = `${newTx.amount}_${newTx.time}_${newTx.name}`;
-    setTransactions((prev) => {
-      // Check for duplicates based on uniqueKey
-      if (prev.find((tx) => `${tx.amount}_${tx.time}_${tx.name}` === uniqueKey)) {
-        return prev; // Skip if duplicate
-      }
-      return [newTx, ...prev];
-    });
-  }, [amount, currency, transferType, ibanDetails, setTransactions]);
 
   return (
     <div className="flex items-center justify-center">

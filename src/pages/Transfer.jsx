@@ -42,27 +42,39 @@ function Transfer({ balance, setBalance, transactions, setTransactions }) {
   const [errors, setErrors] = useState({});
   const [showConfirm, setShowConfirm] = useState(false);
   const [isLoadingIban, setIsLoadingIban] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const transferType = getTransferType(country);
 
   const handleIbanChange = (e) => {
     const value = e.target.value.replace(/\s+/g, "");
     setIban(value);
-    setIsLoadingIban(true);
     setIbanDetails(null);
+    setShowModal(false);
 
-    setTimeout(() => {
-      if (country === "Belgium" && ibanLookup[value]) {
-        setIbanDetails(ibanLookup[value]);
-      } else {
-        setIbanDetails(null);
-      }
-      setIsLoadingIban(false);
-    }, 3000);
+    if (value) {
+      setIsLoadingIban(true);
+      setTimeout(() => {
+        if (country === "Belgium" && ibanLookup[value]) {
+          setIbanDetails(ibanLookup[value]);
+        } else {
+          setIbanDetails(null);
+        }
+        setIsLoadingIban(false);
+      }, 3000);
+    }
+  };
+
+  const handleSwiftChange = (e) => {
+    const value = e.target.value;
+    setSwift(value);
+    setShowModal(false);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     const newErrors = {};
     if (!amount || parseFloat(amount) <= 0) {
       newErrors.amount = "Enter a valid amount.";
@@ -79,9 +91,20 @@ function Transfer({ balance, setBalance, transactions, setTransactions }) {
     if (amount && amountInEur > balance) {
       newErrors.amount = "Insufficient balance.";
     }
+
     setErrors(newErrors);
+
     if (Object.keys(newErrors).length === 0) {
-      setShowConfirm(true);
+      setTimeout(() => {
+        setIsSubmitting(false);
+        if (transferType === "SWIFT" || (transferType === "SEPA" && !ibanDetails)) {
+          setShowModal(true);
+        } else {
+          setShowConfirm(true);
+        }
+      }, 3000);
+    } else {
+      setIsSubmitting(false);
     }
   };
 
@@ -102,9 +125,7 @@ function Transfer({ balance, setBalance, transactions, setTransactions }) {
       id: Date.now(),
       name: ibanDetails
         ? `${ibanDetails.firstName} ${ibanDetails.lastName}`
-        : transferType === "SEPA"
-        ? "SEPA Transfer"
-        : "SWIFT Transfer",
+        : "SEPA Transfer",
       time: new Date().toLocaleString(),
       amount: `-${amount} ${currency}`,
       color: "red",
@@ -246,18 +267,35 @@ function Transfer({ balance, setBalance, transactions, setTransactions }) {
             <input
               type="text"
               value={swift}
-              onChange={(e) => setSwift(e.target.value)}
+              onChange={handleSwiftChange}
               className="w-full p-3 border rounded-lg dark:bg-gray-800 dark:border-gray-600"
               placeholder="Enter SWIFT/BIC Code"
             />
             {errors.swift && <p className="text-red-500 text-sm mt-1">{errors.swift}</p>}
+            {isLoadingIban && (
+              <div className="mt-2 flex justify-center">
+                <div className="w-6 h-6 border-4 border-t-transparent border-blue-500 rounded-full animate-spin"></div>
+              </div>
+            )}
           </div>
         )}
         <button
           type="submit"
-          className="w-full p-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition"
+          disabled={isSubmitting}
+          className={`w-full p-3 rounded-lg font-semibold transition ${
+            isSubmitting
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-green-600 text-white hover:bg-green-700"
+          }`}
         >
-          Send Transfer
+          {isSubmitting ? (
+            <div className="flex items-center justify-center">
+              <div className="w-6 h-6 border-4 border-t-transparent border-white rounded-full animate-spin"></div>
+              <span className="ml-2">Processing...</span>
+            </div>
+          ) : (
+            "Send Transfer"
+          )}
         </button>
       </form>
 
@@ -289,6 +327,23 @@ function Transfer({ balance, setBalance, transactions, setTransactions }) {
                 className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
               >
                 Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl w-96">
+            <h2 className="text-lg font-bold mb-4">Error</h2>
+            <p>This user is not a benefactor to this account.</p>
+            <div className="flex justify-end mt-6">
+              <button
+                onClick={() => setShowModal(false)}
+                className="px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 transition"
+              >
+                OK
               </button>
             </div>
           </div>
