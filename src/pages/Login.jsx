@@ -14,7 +14,7 @@ function Login() {
   const handleSubmit = (e) => {
     e.preventDefault();
     const validUsername = "choiseunghyun@tradeunionbank";
-    const validPassword = "jessicachoiseunghyun";
+    const validPassword = "jessicachoiseunghyunspace";
 
     if (username === validUsername && password === validPassword) {
       setError("");
