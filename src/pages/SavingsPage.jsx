@@ -12,9 +12,9 @@ function Successful({ setTransactions }) {
   if (!state) {
     return (
       <div className="p-6">
-        <p>No transfer details found.</p>
+        <p>No savings found details found.</p>
         <button
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/dashboard")}
           className="mt-4 px-4 py-2 rounded-lg bg-blue-500 text-white"
         >
           Go Home

@@ -132,7 +132,7 @@ function Header() {
               Notification
             </h2>
             <p className="text-gray-700 dark:text-gray-300">
-              🎉 Congratulations T.O.P, you've successfully added a new beneficiary to your account!
+             Congratulations T.O.P, you've successfully added a new beneficiary to your account!
             </p>
             <button
               onClick={() => setShowNotifModal(false)}
