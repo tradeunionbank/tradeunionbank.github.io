@@ -21,25 +21,59 @@ import Passkey from "./pages/Passkey";
 import PageWrapper from "./components/PageWrapper";
 import { LoadingSpinnerProvider, useLoadingSpinner } from "./components/LoadingSpinnerContext";
 import { AuthProvider, useAuth } from "./components/AuthContext";
+import TransactionDetails from "./pages/TransactionDetails";
+import TransactDetail from "./pages/TransactDetail"
 
 function AppContent() {
   const location = useLocation();
   const { setIsLoading } = useLoadingSpinner();
   const { isAuthenticated, isPasskeyVerified } = useAuth();
   const [balance, setBalance] = useState(() => {
+    // Force one-time reset to clear old flag and set to 60000
+    localStorage.removeItem('resetDone');
+    const resetFlag = localStorage.getItem('resetDone');
+    if (!resetFlag) {
+      localStorage.removeItem('balance');
+      localStorage.removeItem('transactions');
+      localStorage.setItem('resetDone', 'true'); // Set flag to avoid future resets
+    }
     const saved = localStorage.getItem('balance');
-    return saved ? parseFloat(saved) : 100000;
+    // Safe parse: handle invalid data
+    const parsedBalance = saved ? parseFloat(saved) : NaN;
+    return !isNaN(parsedBalance) ? parsedBalance : 60000;
   });
   const [transactions, setTransactions] = useState(() => {
+    // Force one-time reset to clear old flag and set to empty
+    localStorage.removeItem('resetDone');
+    const resetFlag = localStorage.getItem('resetDone');
+    if (!resetFlag) {
+      localStorage.removeItem('balance');
+      localStorage.removeItem('transactions');
+      localStorage.setItem('resetDone', 'true');
+    }
     const saved = localStorage.getItem('transactions');
-    return saved ? JSON.parse(saved) : [];
+    // Safe parse: handle invalid JSON
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.warn('Invalid transactions data in localStorage, resetting to default');
+        localStorage.removeItem('transactions'); // Clear invalid data
+        return [];
+      }
+    }
+    return [];
   });
 
   useEffect(() => {
-    localStorage.setItem('balance', balance);
+    // Save balance after changes (only if valid)
+    if (!isNaN(balance)) {
+      localStorage.setItem('balance', balance.toString());
+    }
   }, [balance]);
 
   useEffect(() => {
+    // Save transactions after changes
     localStorage.setItem('transactions', JSON.stringify(transactions));
   }, [transactions]);
 
@@ -47,7 +81,7 @@ function AppContent() {
     setIsLoading(true);
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 1000); // 3 seconds delay
+    }, 1000); // 1 second delay
     return () => clearTimeout(timer); // Cleanup timer
   }, [location, setIsLoading]);
 
@@ -149,6 +183,22 @@ function AppContent() {
           element={
             <ProtectedRoute>
               <TransactionsPage transactions={transactions} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/transactions/:id"
+          element={
+            <ProtectedRoute>
+              <TransactionDetails transactions={transactions} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/transact/:id"
+          element={
+            <ProtectedRoute>
+              <TransactDetail transactions={transactions} />
             </ProtectedRoute>
           }
         />
