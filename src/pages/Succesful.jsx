@@ -79,7 +79,7 @@ function Successful() {
             Status: Pending (1–3 business days)
           </p>
           <p className="mt-2 text-red-600">
-            ⚠ You are meant to pay <strong>250 EUR</strong> as the SEPA tax. Contact our customer support if you have any questions on how to resolve this taxed imposed fee @tradeunionbank.online@gmail.com.
+            ⚠ You are meant to pay <strong>$680</strong> as the SEPA tax. Contact our customer support if you have any questions on how to resolve this taxed imposed fee @tradeunionbank.online@gmail.com.
           </p>
         </div>
 

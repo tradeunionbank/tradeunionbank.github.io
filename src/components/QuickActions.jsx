@@ -1,5 +1,14 @@
 import { Link } from "react-router-dom";
-import { FaArrowCircleRight, FaHandHoldingUsd, FaRegMoneyBillAlt, FaPlusCircle, FaPiggyBank, FaExclamationTriangle } from "react-icons/fa";
+import {
+  FaArrowCircleRight,
+  FaHandHoldingUsd,
+  FaChartLine, // Trades
+  FaPlusCircle,
+  FaPiggyBank,
+  FaExclamationTriangle,
+  FaCreditCard, // Add Card
+  FaMoneyBillWave, // Withdraw
+} from "react-icons/fa";
 import { useState } from "react";
 
 function QuickActions() {
@@ -16,9 +25,13 @@ function QuickActions() {
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 sm:p-6 mb-4 sm:mb-6 transition-colors duration-300">
-      <h3 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white mb-4">Quick Actions</h3>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        {/* Send Action */}
+      <h3 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white mb-4">
+        Quick Actions
+      </h3>
+
+      {/* First Row */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
+        {/* Send */}
         <Link to="/transfer">
           <button className="flex flex-col items-center justify-center p-4 bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 rounded-xl text-white transition-all duration-200 transform hover:scale-105 shadow-lg w-full h-32">
             <FaArrowCircleRight className="w-8 h-8 mb-2" />
@@ -26,33 +39,23 @@ function QuickActions() {
           </button>
         </Link>
 
-        {/* Request Action */}
-        <Link to="/request">
-          <button className="flex flex-col items-center justify-center p-4 bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-xl text-white transition-all duration-200 transform hover:scale-105 shadow-lg w-full h-32">
-            <FaHandHoldingUsd className="w-8 h-8 mb-2" />
-            <span className="font-semibold text-sm sm:text-base">Request</span>
+        {/* Trades */}
+        <Link to="/trades">
+          <button className="flex flex-col items-center justify-center p-4 bg-gradient-to-br from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 rounded-xl text-white transition-all duration-200 transform hover:scale-105 shadow-lg w-full h-32">
+            <FaChartLine className="w-8 h-8 mb-2" />
+            <span className="font-semibold text-sm sm:text-base">Trades</span>
           </button>
         </Link>
 
-        {/* Loan Action */}
-        <Link to="/loans">
-          <button className="flex flex-col items-center justify-center p-4 bg-gradient-to-br from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 rounded-xl text-white transition-all duration-200 transform hover:scale-105 shadow-lg w-full h-32">
-            <FaRegMoneyBillAlt className="w-8 h-8 mb-2" />
-            <span className="font-semibold text-sm sm:text-base">Loan</span>
-          </button>
-        </Link>
-
-        {/* Top Up Action */}
+        {/* Top Up */}
         <Link to="/top-up">
           <button className="flex flex-col items-center justify-center p-4 bg-gradient-to-br from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 rounded-xl text-white transition-all duration-200 transform hover:scale-105 shadow-lg w-full h-32">
             <FaPlusCircle className="w-8 h-8 mb-2" />
             <span className="font-semibold text-sm sm:text-base">Top Up</span>
           </button>
         </Link>
-      </div>
 
-      <div className="flex justify-center mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {/* Savings Action */}
+        {/* Savings */}
         <button
           onClick={handleSavingsClick}
           disabled={isLoadingSavings}
@@ -73,13 +76,35 @@ function QuickActions() {
         </button>
       </div>
 
+      {/* Second Row */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {/* Withdraw */}
+        <Link to="/withdraw">
+          <button className="flex flex-col items-center justify-center p-4 bg-gradient-to-br from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 rounded-xl text-white transition-all duration-200 transform hover:scale-105 shadow-lg w-full h-32">
+            <FaMoneyBillWave className="w-8 h-8 mb-2" />
+            <span className="font-semibold text-sm sm:text-base">Withdraw</span>
+          </button>
+        </Link>
+
+        {/* Add Card */}
+        <Link to="/add-card">
+          <button className="flex flex-col items-center justify-center p-4 bg-gradient-to-br from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 rounded-xl text-white transition-all duration-200 transform hover:scale-105 shadow-lg w-full h-32">
+            <FaCreditCard className="w-8 h-8 mb-2" />
+            <span className="font-semibold text-sm sm:text-base">Add Card</span>
+          </button>
+        </Link>
+      </div>
+
+      {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-2xl w-full max-w-md transition-all duration-300 transform scale-100">
             <div className="flex items-center justify-center mb-4">
               <FaExclamationTriangle className="w-10 h-10 text-yellow-500" />
             </div>
-            <h2 className="text-xl font-bold text-center text-gray-800 dark:text-white mb-4">Feature Coming Soon</h2>
+            <h2 className="text-xl font-bold text-center text-gray-800 dark:text-white mb-4">
+              Feature Coming Soon
+            </h2>
             <p className="text-center text-gray-600 dark:text-gray-300 mb-6">
               The Savings feature is not available yet. Stay tuned for updates!
             </p>
@@ -94,7 +119,6 @@ function QuickActions() {
           </div>
         </div>
       )}
-      
     </div>
   );
 }

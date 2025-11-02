@@ -27,7 +27,7 @@ function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 to-purple-700 p-4">
-      <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-2xl w-full max-w-md transform transition-all duration-300 hover:shadow-3xl">
+      <div className="bg-white dark:bg-gray-800/30 p-8 rounded-xl shadow-2xl w-full max-w-md transform transition-all duration-300 hover:shadow-3xl">
         <h2 className="text-3xl font-bold text-center text-gray-800 dark:text-white mb-6">
           Welcome Back
         </h2>

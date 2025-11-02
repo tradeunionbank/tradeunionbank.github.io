@@ -1,11 +1,14 @@
+// src/pages/Transfer.jsx
 import { useState, useEffect } from "react";
 import { FaArrowAltCircleLeft } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { ibanLookup, swiftLookup } from "../data/lookupDatabase";
+import BalanceCard from "../components/BalanceCard";
 
 const rates = {
-  USD: 1.0870, // 1 EUR = 1.0870 USD (approximate rate as of Sep 02, 2025)
-  EUR: 1,      // Base currency
-  GBP: 1.2821, // 1 EUR = 1.2821 GBP (approximate rate)
+  USD: 1.0870,
+  EUR: 1,
+  GBP: 1.2821,
 };
 
 const sepaCountries = [
@@ -21,32 +24,38 @@ const getTransferType = (country) => {
   return "";
 };
 
-// Mock IBAN lookup (Belgium example)
-const ibanLookup = {
-  BE76063894559495: {
-    firstName: "Jessica",
-    lastName: "Castronovo",
-    bankName: "BELFIUS BANK SA/NV",
-  },
-};
-
-function Transfer({ balance, setBalance, transactions, setTransactions }) {
+function Transfer() {
   const navigate = useNavigate();
+
+  // --- Persistent balance state ---
+  const [balance, setBalance] = useState(() => {
+    const storedBalance = localStorage.getItem("balance");
+    return storedBalance ? parseFloat(storedBalance) : 100000; // default EUR balance
+  });
+
   const [amount, setAmount] = useState("");
-  const [currency, setCurrency] = useState("EUR"); // Default to EUR
+  const [currency, setCurrency] = useState("EUR");
   const [country, setCountry] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [iban, setIban] = useState("");
   const [swift, setSwift] = useState("");
   const [ibanDetails, setIbanDetails] = useState(null);
+  const [swiftDetails, setSwiftDetails] = useState(null);
   const [errors, setErrors] = useState({});
   const [showConfirm, setShowConfirm] = useState(false);
   const [isLoadingIban, setIsLoadingIban] = useState(false);
+  const [isLoadingSwift, setIsLoadingSwift] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
   const transferType = getTransferType(country);
 
+  // --- Save balance persistently whenever it changes ---
+  useEffect(() => {
+    localStorage.setItem("balance", balance);
+  }, [balance]);
+
+  // --- IBAN Lookup (SEPA) ---
   const handleIbanChange = (e) => {
     const value = e.target.value.replace(/\s+/g, "");
     setIban(value);
@@ -56,98 +65,101 @@ function Transfer({ balance, setBalance, transactions, setTransactions }) {
     if (value) {
       setIsLoadingIban(true);
       setTimeout(() => {
-        if (country === "Belgium" && ibanLookup[value]) {
-          setIbanDetails(ibanLookup[value]);
-        } else {
-          setIbanDetails(null);
-        }
+        setIbanDetails(ibanLookup[value] || null);
         setIsLoadingIban(false);
-      }, 3000);
+      }, 2500);
     }
   };
 
+  // --- SWIFT Lookup (SWIFT) ---
   const handleSwiftChange = (e) => {
-    const value = e.target.value;
+    const value = e.target.value.trim();
     setSwift(value);
+    setSwiftDetails(null);
     setShowModal(false);
+
+    if (value) {
+      setIsLoadingSwift(true);
+      setTimeout(() => {
+        setSwiftDetails(swiftLookup[value] || null);
+        setIsLoadingSwift(false);
+      }, 2500);
+    }
   };
 
+  // --- Validate before confirm ---
   const handleSubmit = (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     const newErrors = {};
-    if (!amount || parseFloat(amount) <= 0) {
-      newErrors.amount = "Enter a valid amount.";
-    }
+
+    if (!amount || parseFloat(amount) <= 0) newErrors.amount = "Enter a valid amount.";
     if (!currency) newErrors.currency = "Currency is required.";
     if (!country) newErrors.country = "Destination country is required.";
-    if (transferType === "SEPA" && !iban) {
-      newErrors.iban = "IBAN is required for SEPA transfers.";
-    }
-    if (transferType === "SWIFT" && !swift) {
-      newErrors.swift = "SWIFT Code is required for SWIFT transfers.";
-    }
-    const amountInEur = currency === "EUR" ? parseFloat(amount) : parseFloat(amount) / rates[currency];
-    if (amount && amountInEur > balance) {
-      newErrors.amount = "Insufficient balance.";
-    }
+
+    if (transferType === "SEPA" && !iban) newErrors.iban = "IBAN is required for SEPA transfers.";
+    if (transferType === "SWIFT" && !swift) newErrors.swift = "SWIFT/Account number is required.";
+
+    const amountInEur =
+      currency === "EUR" ? parseFloat(amount) : parseFloat(amount) / rates[currency];
+    if (amount && amountInEur > balance) newErrors.amount = "Insufficient balance.";
 
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
       setTimeout(() => {
         setIsSubmitting(false);
-        if (transferType === "SWIFT" || (transferType === "SEPA" && !ibanDetails)) {
+        if (
+          (transferType === "SEPA" && !ibanDetails) ||
+          (transferType === "SWIFT" && !swiftDetails)
+        ) {
           setShowModal(true);
         } else {
           setShowConfirm(true);
         }
-      }, 3000);
+      }, 2000);
     } else {
       setIsSubmitting(false);
     }
   };
 
+  // --- Confirm Transfer ---
   const handleConfirm = () => {
-    // Calculate the amount to deduct in EUR
-    const amountInEur = currency === "EUR" ? parseFloat(amount) : parseFloat(amount) / rates[currency];
-    console.log("Amount in EUR to deduct:", amountInEur); // Debug log
+    const amountInEur =
+      currency === "EUR" ? parseFloat(amount) : parseFloat(amount) / rates[currency];
+    const newBalance = balance - amountInEur;
 
-    // Deduct the amount from balance here
-    setBalance((prev) => {
-      const newBalance = prev - amountInEur;
-      console.log("New balance after deduction:", newBalance); // Debug log
-      return newBalance;
-    });
+    // ✅ Update balance and persist
+    setBalance(newBalance);
+    localStorage.setItem("balance", newBalance);
 
-    // Save transaction
+    // ✅ Create transaction
+    const details = ibanDetails || swiftDetails;
+    const txId = `tx-${Date.now()}`;
+
     const newTx = {
-      id: Date.now(),
-      name: ibanDetails
-        ? `${ibanDetails.firstName} ${ibanDetails.lastName}`
-        : "SEPA Transfer",
+      id: txId,
+      name: details
+        ? `${details.firstName} ${details.middleName ? details.middleName + " " : ""}${details.lastName}`
+        : "Bank Transfer",
       time: new Date().toLocaleString(),
       amount: `-${amount} ${currency}`,
       color: "red",
+      type: "debit",
+      transferType,
+      iban,
+      swift,
+      ibanDetails,
+      swiftDetails,
+      newBalance,
+      status: "Completed",
     };
-    setTransactions((prev) => {
-      if (prev.find((tx) => tx.id === newTx.id)) return prev;
-      return [newTx, ...prev];
-    });
 
-    // Navigate to Successful page with the updated state
-    navigate("/successful", {
-      state: {
-        amount,
-        currency,
-        country,
-        transferType,
-        iban,
-        swift,
-        ibanDetails,
-        newBalance: balance - amountInEur, // Pass the new balance
-      },
-    });
+    // ✅ Save transaction persistently
+    const stored = JSON.parse(localStorage.getItem("transactions")) || [];
+    localStorage.setItem("transactions", JSON.stringify([newTx, ...stored]));
+
+    navigate("/successful", { state: newTx });
   };
 
   const filteredCountries = [
@@ -174,7 +186,13 @@ function Transfer({ balance, setBalance, transactions, setTransactions }) {
         </p>
       </header>
 
+      <div>
+        {/* ✅ Display current balance */}
+        <BalanceCard balance={balance} />
+      </div>
+
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Amount */}
         <div>
           <label className="block mb-2">Amount</label>
           <input
@@ -187,6 +205,7 @@ function Transfer({ balance, setBalance, transactions, setTransactions }) {
           {errors.amount && <p className="text-red-500 text-sm mt-1">{errors.amount}</p>}
         </div>
 
+        {/* Currency */}
         <div>
           <label className="block mb-2">Currency</label>
           <div className="flex gap-4">
@@ -203,9 +222,9 @@ function Transfer({ balance, setBalance, transactions, setTransactions }) {
               </button>
             ))}
           </div>
-          {errors.currency && <p className="text-red-500 text-sm mt-1">{errors.currency}</p>}
         </div>
 
+        {/* Country */}
         <div>
           <label className="block mb-2">Destination Country</label>
           <input
@@ -215,7 +234,6 @@ function Transfer({ balance, setBalance, transactions, setTransactions }) {
             className="w-full p-3 border rounded-lg dark:bg-gray-800 dark:border-gray-600 mb-2"
             placeholder="Search country..."
           />
-          {errors.country && <p className="text-red-500 text-sm mt-1">{errors.country}</p>}
           {searchTerm && (
             <ul className="border rounded-lg max-h-40 overflow-y-auto dark:bg-gray-800 dark:border-gray-600">
               {filteredCountries.map((c) => (
@@ -236,6 +254,7 @@ function Transfer({ balance, setBalance, transactions, setTransactions }) {
           )}
         </div>
 
+        {/* SEPA IBAN */}
         {transferType === "SEPA" && (
           <div>
             <label className="block mb-2">IBAN</label>
@@ -246,7 +265,6 @@ function Transfer({ balance, setBalance, transactions, setTransactions }) {
               className="w-full p-3 border rounded-lg dark:bg-gray-800 dark:border-gray-600"
               placeholder="Enter IBAN"
             />
-            {errors.iban && <p className="text-red-500 text-sm mt-1">{errors.iban}</p>}
             {isLoadingIban && (
               <div className="mt-2 flex justify-center">
                 <div className="w-6 h-6 border-4 border-t-transparent border-blue-500 rounded-full animate-spin"></div>
@@ -261,24 +279,35 @@ function Transfer({ balance, setBalance, transactions, setTransactions }) {
             )}
           </div>
         )}
+
+        {/* SWIFT */}
         {transferType === "SWIFT" && (
           <div>
-            <label className="block mb-2">SWIFT Code</label>
+            <label className="block mb-2">SWIFT / Account Number</label>
             <input
               type="text"
               value={swift}
               onChange={handleSwiftChange}
               className="w-full p-3 border rounded-lg dark:bg-gray-800 dark:border-gray-600"
-              placeholder="Enter SWIFT/BIC Code"
+              placeholder="Enter SWIFT / Account Number"
             />
-            {errors.swift && <p className="text-red-500 text-sm mt-1">{errors.swift}</p>}
-            {isLoadingIban && (
+            {isLoadingSwift && (
               <div className="mt-2 flex justify-center">
                 <div className="w-6 h-6 border-4 border-t-transparent border-blue-500 rounded-full animate-spin"></div>
               </div>
             )}
+            {swiftDetails && !isLoadingSwift && (
+              <div className="mt-3 p-3 border rounded-lg bg-gray-100 dark:bg-gray-700">
+                <p><strong>First Name:</strong> {swiftDetails.firstName}</p>
+                <p><strong>Middle Name:</strong> {swiftDetails.middleName}</p>
+                <p><strong>Last Name:</strong> {swiftDetails.lastName}</p>
+                <p><strong>Bank Name:</strong> {swiftDetails.bankName}</p>
+              </div>
+            )}
           </div>
         )}
+
+        {/* Submit */}
         <button
           type="submit"
           disabled={isSubmitting}
@@ -288,17 +317,11 @@ function Transfer({ balance, setBalance, transactions, setTransactions }) {
               : "bg-green-600 text-white hover:bg-green-700"
           }`}
         >
-          {isSubmitting ? (
-            <div className="flex items-center justify-center">
-              <div className="w-6 h-6 border-4 border-t-transparent border-white rounded-full animate-spin"></div>
-              <span className="ml-2">Processing...</span>
-            </div>
-          ) : (
-            "Send Transfer"
-          )}
+          {isSubmitting ? "Processing..." : "Send Transfer"}
         </button>
       </form>
 
+      {/* Confirm Modal */}
       {showConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl w-96">
@@ -308,13 +331,6 @@ function Transfer({ balance, setBalance, transactions, setTransactions }) {
             <p><strong>Type:</strong> {transferType}</p>
             {iban && <p><strong>IBAN:</strong> {iban}</p>}
             {swift && <p><strong>SWIFT:</strong> {swift}</p>}
-            {ibanDetails && (
-              <>
-                <p><strong>First Name:</strong> {ibanDetails.firstName}</p>
-                <p><strong>Last Name:</strong> {ibanDetails.lastName}</p>
-                <p><strong>Bank Name:</strong> {ibanDetails.bankName}</p>
-              </>
-            )}
             <div className="flex justify-between mt-6">
               <button
                 onClick={() => setShowConfirm(false)}
@@ -327,23 +343,6 @@ function Transfer({ balance, setBalance, transactions, setTransactions }) {
                 className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
               >
                 Confirm
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl w-96">
-            <h2 className="text-lg font-bold mb-4">Error</h2>
-            <p>This user is not a benefactor to this account.</p>
-            <div className="flex justify-end mt-6">
-              <button
-                onClick={() => setShowModal(false)}
-                className="px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 transition"
-              >
-                OK
               </button>
             </div>
           </div>

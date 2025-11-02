@@ -93,36 +93,91 @@ function Header() {
 
       {/* --- User Modal --- */}
       {showUserModal && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 w-96 shadow-xl">
-            <h2 className="text-lg font-semibold mb-4 text-gray-800 dark:text-white">
-              PROFILE
-            </h2>
-            <div className="space-y-3 text-sm text-gray-700 dark:text-gray-300">
-              <div>
-                <p><strong>T.O.P</strong></p>
-                <p>IBAN Number: ************7265</p>
-                <p>Account Type: Private</p>
-              </div>
-              <div>
-                <p>Full Name: <span className="font-medium">Choi Seung Hyun</span></p>
-                <p>Mobile: +1 (626) 553-2427</p>
-                <p>Nickname: T.O.P</p>
-                <p>Gender: Male</p>
-                <p>Date of Birth: 1987-11-04</p>
-                <p>Email: choiseunghyun******@***.com</p>
-                <p>Address: 29-4, Yangchon-gil,Nam-gu, Gwangju.</p>
-              </div>
-            </div>
-            <button
-              onClick={() => setShowUserModal(false)}
-              className="mt-4 w-full p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
-            >
-              Close
-            </button>
-          </div>
+  <motion.div
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-60 backdrop-blur-sm"
+  >
+    <motion.div
+      initial={{ scale: 0.9, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ duration: 0.3 }}
+      className="relative bg-white dark:bg-gray-900 rounded-2xl p-8 w-[420px] shadow-2xl border border-gray-200 dark:border-gray-700"
+    >
+      {/* Header */}
+      <div className="text-center mb-6">
+        <div className="mx-auto w-20 h-20 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white text-3xl font-bold shadow-md">
+          CH
         </div>
-      )}
+        <h2 className="text-2xl font-semibold mt-3 text-gray-800 dark:text-white">
+          Choi Seung Hyun
+        </h2>
+        <p className="text-gray-500 dark:text-gray-400 text-sm">Private Account</p>
+      </div>
+
+      {/* Info List */}
+      <div className="space-y-4 text-sm text-gray-700 dark:text-gray-300">
+        <div className="flex justify-between border-b border-gray-200 dark:border-gray-700 pb-2">
+          <span className="font-medium">IBAN</span>
+          <span className="font-mono">************7265</span>
+        </div>
+        <div className="flex justify-between border-b border-gray-200 dark:border-gray-700 pb-2">
+          <span className="font-medium">Account Type</span>
+          <span>Private</span>
+        </div>
+        <div className="flex justify-between border-b border-gray-200 dark:border-gray-700 pb-2">
+          <span className="font-medium">Nickname</span>
+          <span>T.O.P</span>
+        </div>
+        <div className="flex justify-between border-b border-gray-200 dark:border-gray-700 pb-2">
+          <span className="font-medium">Mobile</span>
+          <span>+1 (626) 553-2427</span>
+        </div>
+        <div className="flex justify-between border-b border-gray-200 dark:border-gray-700 pb-2">
+          <span className="font-medium">Gender</span>
+          <span>Male</span>
+        </div>
+        <div className="flex justify-between border-b border-gray-200 dark:border-gray-700 pb-2">
+          <span className="font-medium">Date of Birth</span>
+          <span>1987-11-04</span>
+        </div>
+        <div className="flex flex-col border-b border-gray-200 dark:border-gray-700 pb-2">
+          <span className="font-medium mb-1">Email</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400">
+            choiseunghyun******@***.com
+          </span>
+        </div>
+        <div className="flex flex-col">
+          <span className="font-medium mb-1">Address</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400">
+            29-4, Yangchon-gil, Nam-gu, Gwangju.
+          </span>
+        </div>
+      </div>
+
+      {/* Footer Buttons */}
+      <div className="mt-8 flex justify-between">
+        <button
+          onClick={() => setShowUserModal(false)}
+          className="flex-1 py-2 mr-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:opacity-90 transition"
+        >
+          Close
+        </button>
+        <button
+          onClick={() => navigate('/transactions')}
+          className="flex-1 py-2 ml-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white font-semibold rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+        >
+          View Activity
+        </button>
+      </div>
+
+      {/* Subtle Accent Glow */}
+      <div className="absolute inset-0 rounded-2xl ring-1 ring-blue-500/20 pointer-events-none" />
+    </motion.div>
+  </motion.div>
+)}
+
 
       {/* --- Notification Modal --- */}
       {showNotifModal && (

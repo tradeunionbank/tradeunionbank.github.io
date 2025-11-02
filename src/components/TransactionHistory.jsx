@@ -1,51 +1,77 @@
 // src/components/TransactionHistory.jsx
-import React from "react";
-import { Receipt, ArrowDownCircle } from "lucide-react"; // icons
+import React, { useEffect, useState } from "react";
+import { Receipt, ArrowDownCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-function TransactionHistory({ transactions = [] }) {
+function TransactionHistory() {
   const navigate = useNavigate();
+  const [transactions, setTransactions] = useState([]);
 
-  // default cheque transactions and new debit transaction
+  // --- Default Cheque Transactions ---
   const defaultTransactions = [
     {
       id: "cheque-1",
       name: "Cheque Deposit",
-      amount: "+ EUR 60,000",
-      time: "2025-09-01 17:25:23",
+      amount: "+ USD 60,000",
+      time: "2025-10-30 17:25:23",
       color: "green",
       type: "cheque",
+      status: "Completed",
     },
     {
       id: "cheque-2",
       name: "Cheque Deposit",
-      amount: "+ EUR 40,000",
-      time: "2025-09-01 17:30:48",
+      amount: "+ USD 40,000",
+      time: "2025-10-30 17:30:48",
       color: "green",
       type: "cheque",
-    },
-    {
-      id: "debit-1",
-      name: "Jessica Castronovo",
-      amount: "-20000 EUR",
-      time: "03/09/2025, 15:54:35 PM",
-      color: "red",
-      type: "debit",
-    },
-    {
-      id: "debit-2",
-      name: "Jessica Castronovo",
-      amount: "-20000 EUR",
-      time: "06/09/2025, 17:01:25 PM",
-      color: "red",
-      type: "debit",
+      status: "Completed",
     },
   ];
 
-  // merge default with passed-in transactions
-  const allTransactions = [...defaultTransactions, ...transactions];
+  // --- Load transactions and sort by latest ---
+  useEffect(() => {
+    const saved = localStorage.getItem("transactions");
 
-  if (!allTransactions || allTransactions.length === 0) {
+    let combined = [];
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        combined = [
+          ...defaultTransactions.filter(
+            (d) => !parsed.some((tx) => tx.id === d.id)
+          ),
+          ...parsed,
+        ];
+      } catch {
+        combined = defaultTransactions;
+      }
+    } else {
+      combined = defaultTransactions;
+    }
+
+    // --- Sort by most recent date ---
+    combined.sort(
+      (a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()
+    );
+
+    setTransactions(combined);
+    localStorage.setItem("transactions", JSON.stringify(combined));
+  }, []);
+
+  // --- Tailwind color map ---
+  const colorMap = {
+    green: "text-green-600",
+    red: "text-red-600",
+    blue: "text-blue-600",
+    purple: "text-purple-600",
+  };
+
+  const handleClick = (tx) => {
+    navigate(`/transactions/${tx.id}`, { state: tx });
+  };
+
+  if (!transactions || transactions.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center text-center mt-20 space-y-4">
         <div className="p-6 bg-gradient-to-r from-blue-600 to-purple-700 rounded-full shadow-lg">
@@ -61,43 +87,24 @@ function TransactionHistory({ transactions = [] }) {
     );
   }
 
-  // color mapping since Tailwind doesn’t allow dynamic class names
-  const colorMap = {
-    green: "text-green-600",
-    red: "text-red-600",
-    blue: "text-blue-600",
-    purple: "text-purple-600",
-  };
-
-  const handleClick = (id) => {
-    if (id === "debit-1") {
-      navigate(`/transactions/${id}`);
-    } else if (id === "debit-2") {
-      navigate(`/transact/${id}`);
-    }
-  };
-
+  // --- Render Transactions ---
   return (
     <div className="max-w-2xl mx-auto grid grid-cols-1 gap-4">
-      {allTransactions.map((tx) => (
+      {transactions.map((tx) => (
         <div
           key={tx.id}
-          onClick={() => handleClick(tx.id)}
-          className={`flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-xl shadow hover:shadow-md transition ${((tx.id === "debit-1") || (tx.id === "debit-2")) ? "cursor-pointer" : ""}`}
+          onClick={() => handleClick(tx)}
+          className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-xl shadow hover:shadow-md transition cursor-pointer"
         >
-          {/* Left side with icon + details */}
+          {/* Left Side: Icon + Details */}
           <div className="flex items-center space-x-3">
             {tx.type === "cheque" ? (
               <div className="p-2 bg-green-100 rounded-full">
                 <ArrowDownCircle className="w-5 h-5 text-green-600" />
               </div>
-            ) : tx.type === "debit" ? (
+            ) : (
               <div className="p-2 bg-red-100 rounded-full">
                 <Receipt className="w-5 h-5 text-red-600" />
-              </div>
-            ) : (
-              <div className="p-2 bg-gray-200 dark:bg-gray-700 rounded-full">
-                <Receipt className="w-5 h-5 text-gray-600 dark:text-gray-300" />
               </div>
             )}
             <div>
@@ -110,7 +117,7 @@ function TransactionHistory({ transactions = [] }) {
             </div>
           </div>
 
-          {/* Right side with amount */}
+          {/* Right Side: Amount */}
           <span
             className={`font-semibold ${
               colorMap[tx.color] || "text-gray-600"
