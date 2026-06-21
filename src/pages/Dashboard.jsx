@@ -18,7 +18,7 @@ const Dashboard = ({ balance, transactions = [] }) => {
     <div className="min-h-screen bg-slate-50 text-slate-900 transition-colors duration-300 dark:bg-slate-900 dark:text-white">
       <Header />
       <main className="mx-auto max-w-7xl space-y-6 px-4 py-5 sm:px-6 lg:px-8">
-        <section className="grid gap-6 lg:grid-cols-[1.5fr_0.95fr]">
+        <section className="grid gap-6 lg:grid-cols-[1.35fr_1.15fr]">
           <div className="space-y-6">
             <BalanceCard balance={balance} />
 

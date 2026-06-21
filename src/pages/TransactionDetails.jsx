@@ -151,22 +151,6 @@ export default function TransactionDetails({ transactions = [] }) {
             {description && <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-400">{description}</p>}
           </div>
         </div>
-
-        {/* Action Buttons */}
-        <div className="flex gap-4 flex-col sm:flex-row">
-          <button
-            onClick={() => navigate("/dashboard")}
-            className="flex-1 px-6 py-3 bg-slate-200 dark:bg-slate-800 text-gray-900 dark:text-white rounded-xl hover:bg-slate-300 dark:hover:bg-slate-700 transition font-semibold"
-          >
-            Dashboard
-          </button>
-          <button
-            onClick={() => navigate("/transactions")}
-            className="flex-1 px-6 py-3 bg-sky-600 text-white rounded-xl hover:bg-sky-700 transition font-semibold"
-          >
-            All Transactions
-          </button>
-        </div>
       </div>
     </div>
   );

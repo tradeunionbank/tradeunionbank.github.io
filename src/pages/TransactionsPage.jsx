@@ -18,7 +18,7 @@ const TransactionsPage = ({ transactions = [] }) => {
           <ArrowLeftCircle className="w-7 h-7 text-gray-700 dark:text-gray-200" />
         </button>
         <h1 className="text-xl font-bold text-gray-800 dark:text-white">
-          Transfers
+          All Transactions
         </h1>
       </div>
 

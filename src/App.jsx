@@ -27,6 +27,7 @@ import Withdraw from "./pages/Withdraw";
 import AddCard from "./pages/AddCard";
 import Profile from "./pages/Profile";
 import RestrictedOverlay from "./components/RestrictedOverlay";
+import { defaultTransactions } from "./data/defaultTransactions";
 
 function AppContent() {
   const location = useLocation();
@@ -39,148 +40,16 @@ function AppContent() {
     return localStorage.getItem("accountRestricted") === "true";
   });
 
-  const defaultBalance = 3000000;
-  const defaultTransactions = [
-    {
-      id: "ambassador-1",
-      name: "Ambassador Deal",
-      description: "Brand partnership payout for global campaign.",
-      amount: "+ USD 520,000",
-      time: "2026-06-18 10:15:24",
-      color: "blue",
-      type: "credit",
-      status: "Completed",
-    },
-    {
-      id: "sponsor-1",
-      name: "Sponsorship Revenue",
-      description: "Exclusive sponsorship payment from premium partner.",
-      amount: "+ USD 230,000",
-      time: "2026-06-17 14:42:08",
-      color: "blue",
-      type: "credit",
-      status: "Completed",
-    },
-    {
-      id: "realestate-1",
-      name: "Real estate distribution",
-      description: "Quarterly return from private property holdings.",
-      amount: "+ USD 480,000",
-      time: "2026-06-16 18:05:12",
-      color: "blue",
-      type: "credit",
-      status: "Completed",
-    },
-    {
-      id: "launch-1",
-      name: "New product launch",
-      description: "Revenue from premium launch event sponsorship.",
-      amount: "+ USD 145,000",
-      time: "2026-06-15 11:24:40",
-      color: "blue",
-      type: "credit",
-      status: "Completed",
-    },
-    {
-      id: "studio-2",
-      name: "Studio rental credit",
-      description: "Refund for last week’s creative studio booking.",
-      amount: "+ USD 12,000",
-      time: "2026-06-15 08:03:14",
-      color: "blue",
-      type: "credit",
-      status: "Completed",
-    },
-    {
-      id: "investment-1",
-      name: "Private equity sale",
-      description: "Partial exit from high-growth fund.",
-      amount: "+ USD 320,000",
-      time: "2026-06-14 14:30:56",
-      color: "blue",
-      type: "credit",
-      status: "Completed",
-    },
-    {
-      id: "boutique-2",
-      name: "Luxury watch purchase",
-      description: "New timepiece from Geneva boutique.",
-      amount: "- USD 29,400",
-      time: "2026-06-14 10:40:11",
-      color: "red",
-      type: "debit",
-      status: "Completed",
-    },
-    {
-      id: "art-collection-1",
-      name: "Art acquisition",
-      description: "Investment in contemporary gallery collection.",
-      amount: "- USD 94,200",
-      time: "2026-06-13 09:12:07",
-      color: "red",
-      type: "debit",
-      status: "Completed",
-    },
-    {
-      id: "jet-1",
-      name: "Private jet charter",
-      description: "Roundtrip luxury travel for the Cannes event.",
-      amount: "- USD 42,400",
-      time: "2026-06-12 18:22:39",
-      color: "red",
-      type: "debit",
-      status: "Completed",
-    },
-    {
-      id: "dining-1",
-      name: "Private dining",
-      description: "Executive dinner with international guests.",
-      amount: "- USD 4,980",
-      time: "2026-06-11 20:50:17",
-      color: "red",
-      type: "debit",
-      status: "Completed",
-    },
-    {
-      id: "stylist-1",
-      name: "Wardrobe refresh",
-      description: "New couture wardrobe for the upcoming season.",
-      amount: "- USD 16,450",
-      time: "2026-06-11 14:29:03",
-      color: "red",
-      type: "debit",
-      status: "Completed",
-    },
-    {
-      id: "philanthropy-1",
-      name: "Philanthropy fund",
-      description: "Donation to global education initiative.",
-      amount: "- USD 105,000",
-      time: "2026-06-10 14:30:56",
-      color: "red",
-      type: "debit",
-      status: "Completed",
-    },
-    {
-      id: "studio-1",
-      name: "Creative studio booking",
-      description: "Premium event production studio rental.",
-      amount: "- USD 27,500",
-      time: "2026-06-09 16:11:22",
-      color: "red",
-      type: "debit",
-      status: "Completed",
-    },
-  ];
+  const defaultBalance = 83589202.68;
 
   const [balance, setBalance] = useState(() => {
     const storedBalance = localStorage.getItem("balance");
     const storedBalanceVersion = localStorage.getItem("balanceVersion");
     const parsedBalance = parseFloat(storedBalance);
 
-    if (storedBalanceVersion !== "v2" || storedBalance === null || Number.isNaN(parsedBalance)) {
+    if (storedBalanceVersion !== "v3" || storedBalance === null || Number.isNaN(parsedBalance)) {
       localStorage.setItem("balance", defaultBalance.toString());
-      localStorage.setItem("balanceVersion", "v2");
+      localStorage.setItem("balanceVersion", "v3");
       return defaultBalance;
     }
 
@@ -191,9 +60,9 @@ function AppContent() {
     const saved = localStorage.getItem("transactions");
     const storedTransactionsVersion = localStorage.getItem("transactionHistoryVersion");
 
-    if (storedTransactionsVersion !== "v3") {
+    if (storedTransactionsVersion !== "v7") {
       localStorage.setItem("transactions", JSON.stringify(defaultTransactions));
-      localStorage.setItem("transactionHistoryVersion", "v3");
+      localStorage.setItem("transactionHistoryVersion", "v7");
       return defaultTransactions;
     }
 
