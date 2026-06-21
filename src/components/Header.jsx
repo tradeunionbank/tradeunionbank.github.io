@@ -17,7 +17,7 @@ import { useAuth } from "./AuthContext";
 function Header() {
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { currentUser, logout } = useAuth();
   const [showNotifModal, setShowNotifModal] = useState(false);
   const [showChatbot, setShowChatbot] = useState(false);
   const [notifications, setNotifications] = useState([]);
@@ -121,7 +121,7 @@ function Header() {
               aria-label="Open account profile"
             >
               <span className="flex h-7 w-7 items-center justify-center rounded-full bg-sky-600 text-xs font-bold text-white">
-                JC
+                {currentUser?.initials || "PH"}
               </span>
             </button>
             <button

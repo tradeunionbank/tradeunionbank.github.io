@@ -137,7 +137,6 @@ function Transfer({ balance, setBalance, transactions, setTransactions }) {
     const newBalance = balance - amountInEur;
 
     setBalance(newBalance);
-    localStorage.setItem("balance", newBalance);
 
     const details = ibanDetails || swiftDetails;
     const recipientName = details

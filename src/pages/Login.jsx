@@ -2,10 +2,11 @@
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, LockKeyhole, ShieldCheck, UserRound } from "lucide-react";
 import { useAuth } from "../components/AuthContext";
+import { getUser } from "../data/users";
 
 function Login() {
   const navigate = useNavigate();
-  const { setIsAuthenticated } = useAuth();
+  const { login } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -13,13 +14,11 @@ function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Demo/test credentials (do NOT use in production)
-    const validUsername = "jichangwook@pacifichorizon";
-    const validPassword = "chang-wook8231!";
+    const user = getUser(username);
 
-    if (username === validUsername && password === validPassword) {
+    if (user && user.password === password) {
       setError("");
-      setIsAuthenticated(true);
+      login(user);
       navigate("/passkey");
     } else {
       setError("Invalid username or password");

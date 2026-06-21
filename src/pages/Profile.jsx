@@ -1,11 +1,13 @@
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, CreditCard, ShieldCheck, Phone, Mail, MapPin, Clock3, Award } from "lucide-react";
 import Header from "../components/Header";
+import { useAuth } from "../components/AuthContext";
 
-export default function Profile() {
+export default function Profile({ balance }) {
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
 
-  const userProfile = {
+  const fallbackProfile = {
     name: "Ji Chang-Wook",
     role: "Private Banking Client",
     email: "lordismyhelp@gmail.com",
@@ -18,7 +20,13 @@ export default function Profile() {
     branch: "Pacific Horizon Private Bank",
     rewardsStatus: "Platinum Elite",
     passportStatus: "Verified",
+    defaultBalance: 2990800.37,
   };
+
+  const userProfile = currentUser || fallbackProfile;
+  const displayBalance = Number.isFinite(Number(balance))
+    ? Number(balance)
+    : userProfile.defaultBalance || 0;
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 transition-colors duration-300 dark:bg-slate-900 dark:text-white">
@@ -153,7 +161,7 @@ export default function Profile() {
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="text-xs uppercase tracking-[0.3em] text-sky-200">Available balance</p>
-                  <p className="mt-3 text-3xl font-bold">$2,990,800.37</p>
+                  <p className="mt-3 text-3xl font-bold">${displayBalance.toLocaleString(undefined, { maximumFractionDigits: 2 })}</p>
                 </div>
                 <CreditCard className="h-10 w-10 text-white/90" />
               </div>

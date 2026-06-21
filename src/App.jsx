@@ -27,11 +27,10 @@ import Withdraw from "./pages/Withdraw";
 import AddCard from "./pages/AddCard";
 import Profile from "./pages/Profile";
 import RestrictedOverlay from "./components/RestrictedOverlay";
-import { defaultTransactions } from "./data/defaultTransactions";
 
 function AppContent() {
   const location = useLocation();
-  const { isAuthenticated, isPasskeyVerified } = useAuth();
+  const { currentUser, isAuthenticated, isPasskeyVerified } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const timeoutRef = useRef(null);
   const [isRegionBlocked, setIsRegionBlocked] = useState(false);
@@ -40,57 +39,80 @@ function AppContent() {
     return localStorage.getItem("accountRestricted") === "true";
   });
 
-  const defaultBalance = 83589202.68;
+  const [balance, setBalance] = useState(0);
+  const [transactions, setTransactions] = useState([]);
 
-  const [balance, setBalance] = useState(() => {
-    const storedBalance = localStorage.getItem("balance");
-    const storedBalanceVersion = localStorage.getItem("balanceVersion");
-    const parsedBalance = parseFloat(storedBalance);
-
-    if (storedBalanceVersion !== "v3" || storedBalance === null || Number.isNaN(parsedBalance)) {
-      localStorage.setItem("balance", defaultBalance.toString());
-      localStorage.setItem("balanceVersion", "v3");
-      return defaultBalance;
+  useEffect(() => {
+    if (!currentUser) {
+      setBalance(0);
+      setTransactions([]);
+      return;
     }
 
-    return parsedBalance;
-  });
+    const loadBalance = () => {
+      const balanceKey = `balance:${currentUser.username}`;
+      const versionKey = `balanceVersion:${currentUser.username}`;
+      const storedBalance = localStorage.getItem(balanceKey);
+      const storedBalanceVersion = localStorage.getItem(versionKey);
+      const parsedBalance = parseFloat(storedBalance);
 
-  const [transactions, setTransactions] = useState(() => {
-    const saved = localStorage.getItem("transactions");
-    const storedTransactionsVersion = localStorage.getItem("transactionHistoryVersion");
-
-    if (storedTransactionsVersion !== "v7") {
-      localStorage.setItem("transactions", JSON.stringify(defaultTransactions));
-      localStorage.setItem("transactionHistoryVersion", "v7");
-      return defaultTransactions;
-    }
-
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        console.warn("Invalid transactions data, resetting...");
-        localStorage.setItem("transactions", JSON.stringify(defaultTransactions));
-        return defaultTransactions;
+      if (storedBalanceVersion !== "v5" || storedBalance === null || Number.isNaN(parsedBalance)) {
+        localStorage.setItem(balanceKey, currentUser.defaultBalance.toString());
+        localStorage.setItem(versionKey, "v5");
+        return currentUser.defaultBalance;
       }
-    }
 
-    localStorage.setItem("transactions", JSON.stringify(defaultTransactions));
-    return defaultTransactions;
-  });
+      return parsedBalance;
+    };
+
+    const loadTransactions = () => {
+      const txKey = `transactions:${currentUser.username}`;
+      const versionKey = `transactionHistoryVersion:${currentUser.username}`;
+      const saved = localStorage.getItem(txKey);
+      const storedTransactionsVersion = localStorage.getItem(versionKey);
+      const cloneTransactions = (transactions) =>
+        Array.isArray(transactions) ? transactions.map((tx) => ({ ...tx })) : [];
+
+      if (storedTransactionsVersion !== "v8") {
+        const initialTransactions = cloneTransactions(currentUser.transactions);
+        localStorage.setItem(txKey, JSON.stringify(initialTransactions));
+        localStorage.setItem(versionKey, "v8");
+        return initialTransactions;
+      }
+
+      if (saved) {
+        try {
+          return cloneTransactions(JSON.parse(saved));
+        } catch (e) {
+          console.warn("Invalid transactions data, resetting...");
+          const initialTransactions = cloneTransactions(currentUser.transactions);
+          localStorage.setItem(txKey, JSON.stringify(initialTransactions));
+          return initialTransactions;
+        }
+      }
+
+      const initialTransactions = cloneTransactions(currentUser.transactions);
+      localStorage.setItem(txKey, JSON.stringify(initialTransactions));
+      return initialTransactions;
+    };
+
+    setBalance(loadBalance());
+    setTransactions(loadTransactions());
+  }, [currentUser]);
 
   // ✅ Persist balance
   useEffect(() => {
-    if (!isNaN(balance)) {
-      localStorage.setItem("balance", balance.toString());
-    }
-  }, [balance]);
+    if (!currentUser || isNaN(balance)) return;
+    const balanceKey = `balance:${currentUser.username}`;
+    localStorage.setItem(balanceKey, balance.toString());
+  }, [balance, currentUser]);
 
   // ✅ Persist transactions
   useEffect(() => {
-    localStorage.setItem("transactions", JSON.stringify(transactions));
-  }, [transactions]);
+    if (!currentUser) return;
+    const txKey = `transactions:${currentUser.username}`;
+    localStorage.setItem(txKey, JSON.stringify(transactions));
+  }, [transactions, currentUser]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -105,14 +127,16 @@ function AppContent() {
     };
   }, [location.pathname]);
 
-  // --- Region / IP check (client-side) ---
+  // --- Region / IP check (server proxy) ---
   useEffect(() => {
     let mounted = true;
     const denyList = ["Austria", "AT"]; // unsupported regions (country name or code)
 
-    // Best-effort IP geolocation using public endpoint
-    fetch("https://ipapi.co/json/")
-      .then((r) => r.json())
+    fetch("/api/geolocation")
+      .then((r) => {
+        if (!r.ok) throw new Error("Failed to load geolocation");
+        return r.json();
+      })
       .then((data) => {
         if (!mounted) return;
         const country = data.country_name || data.country || data.region || null;
@@ -234,7 +258,7 @@ function AppContent() {
       />
 
       <Route path="/cards" element={<ProtectedRoute><Cards /></ProtectedRoute>} />
-      <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+      <Route path="/profile" element={<ProtectedRoute><Profile balance={balance} /></ProtectedRoute>} />
       <Route path="/cheques" element={<ProtectedRoute><Cheques /></ProtectedRoute>} />
       <Route path="/support" element={<ProtectedRoute><ChatBot /></ProtectedRoute>} />
       <Route path="/withdraw" element={<ProtectedRoute><Withdraw /></ProtectedRoute>} />
