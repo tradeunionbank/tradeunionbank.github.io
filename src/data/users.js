@@ -152,6 +152,16 @@ export const users = {
   },
 };
 
+// List of restricted account usernames
+export const restrictedAccounts = [
+  "jichangwook@pacifichorizon"
+];
+
+export const isAccountRestricted = (username) => {
+  if (!username) return false;
+  return restrictedAccounts.includes(username.trim().toLowerCase());
+};
+
 export const getUser = (username) => {
   if (!username) return null;
   return users[username.trim().toLowerCase()] || null;

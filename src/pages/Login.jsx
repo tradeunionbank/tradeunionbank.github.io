@@ -1,8 +1,9 @@
-﻿import React, { useState } from "react";
+﻿import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, LockKeyhole, ShieldCheck, UserRound } from "lucide-react";
 import { useAuth } from "../components/AuthContext";
-import { getUser } from "../data/users";
+import { getUser, isAccountRestricted } from "../data/users";
+import RestrictedOverlay from "../components/RestrictedOverlay";
 
 function Login() {
   const navigate = useNavigate();
@@ -11,10 +12,31 @@ function Login() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [showRestrictionModal, setShowRestrictionModal] = useState(false);
+
+  useEffect(() => {
+    if (showRestrictionModal) {
+      const timer = setTimeout(() => {
+        setShowRestrictionModal(false);
+        localStorage.removeItem("accountRestricted");
+        window.dispatchEvent(new Event("accountRestrictedUpdated"));
+      }, 8000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showRestrictionModal]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const user = getUser(username);
+
+    // Check if account is restricted
+    if (isAccountRestricted(username)) {
+      setShowRestrictionModal(true);
+      localStorage.setItem("accountRestricted", "true");
+      window.dispatchEvent(new Event("accountRestrictedUpdated"));
+      return;
+    }
 
     if (user && user.password === password) {
       setError("");
@@ -27,6 +49,8 @@ function Login() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-white">
+      {showRestrictionModal && <RestrictedOverlay />}
+      
       <div className="grid min-h-screen lg:grid-cols-[1.05fr_0.95fr]">
         <section className="flex flex-col justify-between bg-sky-700 px-6 py-8 text-white sm:px-10 lg:px-14">
           <div className="flex items-center gap-3">

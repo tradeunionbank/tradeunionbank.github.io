@@ -1,6 +1,3 @@
-// src/data/lookupDatabase.js
-
-// --- SEPA (IBAN) Lookup Database ---
 export const ibanLookup = {
   BE76063894559495: {
     firstName: "Jessica",
